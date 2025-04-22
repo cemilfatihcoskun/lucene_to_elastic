@@ -3,10 +3,14 @@ package lucene_to_elastic;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public class Post {
     private String id;
     private String content;
-    private String dateTime;
+    
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    private LocalDateTime dateTime;
     
     public Post() {
         
@@ -16,7 +20,7 @@ public class Post {
         return content;
     }
     
-    public String getDateTime() {
+    public LocalDateTime getDateTime() {
         return dateTime;
     }
     
@@ -25,7 +29,7 @@ public class Post {
         return this;
     }
     
-    public Post setDateTime(String dateTime) {
+    public Post setDateTime(LocalDateTime dateTime) {
         this.dateTime = dateTime;
         return this;
     }
@@ -34,14 +38,14 @@ public class Post {
         return new Post()
                 .setId(UUID.randomUUID().toString())
                 .setContent(Utils.randomNumber())
-                .setDateTime(Utils.now());
+                .setDateTime(LocalDateTime.now());
     }
     
     public static Post generateWithTime(LocalDateTime dateTime) {
         return new Post()
                 .setId(UUID.randomUUID().toString())
                 .setContent(Utils.randomNumber())
-                .setDateTime(Utils.localDateTimeToLuceneFormat(dateTime));
+                .setDateTime(dateTime);
     }
 
     public String getId() {
@@ -57,5 +61,4 @@ public class Post {
         this.id = id;
         return this;
     }
-    
 }

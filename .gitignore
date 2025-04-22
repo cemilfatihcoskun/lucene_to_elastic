@@ -34,8 +34,9 @@ a.txt
 .project
 .classpath
 .settings
-/target
-/lucene_databsae
-/elasticsearch_database
+target/
+lucene_database/
+elasticsearch_database/
 .git
+.gitignore
 
