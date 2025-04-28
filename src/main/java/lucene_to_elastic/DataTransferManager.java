@@ -50,10 +50,10 @@ public class DataTransferManager {
         }
 
         if (posts.size() == 0) {
-            logger.info(String.format("%s day has no data.", datetime));
+            logger.info(String.format("Day %s has no data.", datetime.toLocalDate()));
         } else {
             elasticsearchDataAccess.bulkIndexDocuments(posts);
-            logger.info(String.format("%s day transactions (%d) are completed.", datetime, results.totalHits));
+            //logger.info(String.format("%s day transactions (%d) are completed.", datetime, results.totalHits));
         }
         
         posts.clear();

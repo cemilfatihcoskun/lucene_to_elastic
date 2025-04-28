@@ -17,4 +17,7 @@ public class DateTimeConverter {
         return DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(datetime);
     }
     
+    public static String toStringFullISO(LocalDateTime datetime) {
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS").format(datetime);
+    }
 }

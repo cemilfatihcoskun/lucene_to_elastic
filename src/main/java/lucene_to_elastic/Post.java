@@ -38,7 +38,7 @@ public class Post {
         return new Post()
                 .setId(UUID.randomUUID().toString())
                 .setContent(Utils.randomNumber())
-                .setDateTime(LocalDateTime.now());
+                .setDateTime(Utils.now());
     }
     
     public static Post generateWithTime(LocalDateTime dateTime) {

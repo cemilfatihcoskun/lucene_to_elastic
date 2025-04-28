@@ -12,13 +12,14 @@ import java.util.logging.Logger;
 public class SyncDateTimeManager {
     private static final String LAST_SYNC_DATETIME_FILE = "lastSyncDatetime.txt";
 
-    public LocalDateTime loadLastSyncDateTime(LocalDateTime firstDate) throws IOException {
+    public static LocalDateTime loadLastSyncDateTime(LocalDateTime firstDate) throws IOException {
         Logger logger = Logger.getGlobal();
         
         File file = new File(LAST_SYNC_DATETIME_FILE);
 
         if (!file.exists()) {
-            logger.info("lastSyncDate.txt does not exist.");
+            SyncDateTimeManager.saveLastSyncDateTime(firstDate);
+            logger.info(String.format("%s does not exist. So it created and starts in %s", LAST_SYNC_DATETIME_FILE, firstDate));
             return firstDate;
         }
 
@@ -28,11 +29,23 @@ public class SyncDateTimeManager {
     }
 
 
-    public void saveLastSyncDateTime(LocalDateTime dateTime) throws IOException {
+    public static void saveLastSyncDateTime(LocalDateTime dateTime) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(LAST_SYNC_DATETIME_FILE))) {
             writer.write(DateTimeConverter.toString(dateTime));
             writer.flush();
         }
     }
-
+    
+    public static void clean() {
+        Logger logger = Logger.getGlobal();
+        
+        File file = new File(LAST_SYNC_DATETIME_FILE);
+        if (file.exists()) {
+            file.delete();
+            logger.info(String.format("Synchronization file %s is deleted.", LAST_SYNC_DATETIME_FILE));
+        } else {
+            // TODO: I am not sure if this is needed
+            //logger.info(String.format("Synchronization file %s does not exists.", LAST_SYNC_DATETIME_FILE));
+        }
+    }
 }

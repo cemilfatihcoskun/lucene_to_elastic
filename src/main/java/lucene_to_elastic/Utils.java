@@ -1,5 +1,7 @@
 package lucene_to_elastic;
 
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Random;
 
 public class Utils {
@@ -17,5 +19,9 @@ public class Utils {
         return rand.nextInt(max - min + 1) + min;
     }
 
-    
+    // TODO: Change ZonedDateTime to LocalDateTime
+    // For testing purposes it uses ZonedDateTime
+    public static LocalDateTime now() {
+        return ZonedDateTime.now().toLocalDateTime();
+    }
 }

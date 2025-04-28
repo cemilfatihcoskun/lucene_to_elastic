@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.logging.Logger;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -22,9 +23,11 @@ import org.apache.lucene.store.LockObtainFailedException;
 
 public class LuceneDataAccess {
     private PostAdapter postAdapter;
+    private Logger logger;
     
     public LuceneDataAccess() {
         postAdapter = new PostAdapterImpl();
+        logger = Logger.getGlobal();
     }
     
     public LocalDateTime findFirstDatasDateTime() throws IOException {
@@ -53,6 +56,7 @@ public class LuceneDataAccess {
         directory.close();
         
         if (oldestDate == "") {
+            logger.warning("Lucene database is empty.");
             new Exception("Lucene database is empty.");
         }
         
@@ -69,15 +73,17 @@ public class LuceneDataAccess {
                 int hours = Utils.randomInteger(0, 23);
                 int minutes = Utils.randomInteger(0, 59);
                 int seconds = Utils.randomInteger(0, 59);
-                int milliseconds = Utils.randomInteger(0, 999999999);
+                int milliseconds = Utils.randomInteger(0, 999);
                 
-                LocalDateTime dateTime = LocalDateTime.of(2000, 1, 1, hours, minutes, seconds, 0).plus(999, ChronoUnit.MILLIS).plusDays(j);
+                LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, hours, minutes, seconds, 0).plus(milliseconds, ChronoUnit.MILLIS).plusDays(j);
                 
                 Post post = Post.generateWithTime(dateTime);
                 add(writer, post);
                 System.out.println(String.format("%d. %s", j * perDay + i, post));
             }
         }
+        
+        logger.info(String.format("Random posts generated for %d days %d per day.", days, perDay));
         
         writer.commit();
         writer.close();
@@ -91,6 +97,7 @@ public class LuceneDataAccess {
         doc.add(new Field("content", post.getContent(), Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("datetime", DateTimeConverter.toString(post.getDateTime()), Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
+        logger.info(String.format("%s is indexed", post));
     }
 
     public void printAll()
@@ -116,35 +123,6 @@ public class LuceneDataAccess {
         directory.close();
     }
     
-    private void searchTimeBetween(LocalDateTime beginDateTime, LocalDateTime endDateTime) throws IOException {
-        Directory directory = FSDirectory.open(new File(Config.LUCENE_DATABASE_PATH));
-        IndexSearcher searcher = new IndexSearcher(directory);
-        
-        String beginDateTimeStr = DateTimeConverter.toString(beginDateTime);
-        String endDateTimeStr = DateTimeConverter.toString(endDateTime);
-        
-        TermRangeQuery query = new TermRangeQuery(
-                "datetime",
-                beginDateTimeStr,
-                endDateTimeStr,
-                true,
-                true
-        );
-        
-        TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-        
-        for (int i = 0; i < results.totalHits; i++) {
-            Document doc = searcher.doc(results.scoreDocs[i].doc);
-            Post post = postAdapter.luceneToPost(doc);
-            
-            System.out.println("Transferred the document: " + post);
-        }
-        
-        searcher.getIndexReader().close();
-        searcher.close();
-        directory.close();
-    }
-    
     public void removeAll() throws IOException {
         Directory directory = FSDirectory.open(new File(Config.LUCENE_DATABASE_PATH));
         Analyzer analyzer = new StandardAnalyzer();
@@ -156,29 +134,19 @@ public class LuceneDataAccess {
         writer.close();
         analyzer.close();
         directory.close();
+        
+        logger.info(String.format("Index %s is deleted.", Config.TABLE_INDEX));
     }
 
-    public Post[] searchForDay(LocalDateTime datetime) throws IOException {
+    public void add(Post post) throws IOException {
         Directory directory = FSDirectory.open(new File(Config.LUCENE_DATABASE_PATH));
-        IndexSearcher searcher = new IndexSearcher(directory);
+        Analyzer analyzer = new StandardAnalyzer();
+        IndexWriter writer = new IndexWriter(directory, analyzer);
         
-        datetime = datetime.withHour(0).withMinute(0).withSecond(0).withNano(0);
-        System.out.println(datetime);
-        String startDateTime = DateTimeConverter.toString(datetime);
-        String endDateTime = DateTimeConverter.toString(datetime.plusDays(1));
-
-        TermRangeQuery query = new TermRangeQuery("datetime", startDateTime, endDateTime, true, false);
-        TopDocs results = searcher.search(query, Integer.MAX_VALUE);
-
-        Post[] posts = new Post[results.totalHits];
-
-        for (int i = 0; i < results.totalHits; i++) {
-            posts[i] = postAdapter.luceneToPost(searcher.doc(results.scoreDocs[i].doc));
-        }
-
-        searcher.getIndexReader().close();
+        add(writer, post);
+        
+        writer.close();
+        analyzer.close();
         directory.close();
-
-        return posts;
     }
 }
