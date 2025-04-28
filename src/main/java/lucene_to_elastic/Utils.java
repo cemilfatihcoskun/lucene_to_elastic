@@ -3,6 +3,7 @@ package lucene_to_elastic;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Random;
+import java.util.zip.CRC32;
 
 public class Utils {
     private static Random rand;
@@ -23,5 +24,11 @@ public class Utils {
     // For testing purposes it uses ZonedDateTime
     public static LocalDateTime now() {
         return ZonedDateTime.now().toLocalDateTime();
+    }
+    
+    public static long calculateCheckSum(String data) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(data.getBytes());
+        return crc32.getValue();
     }
 }

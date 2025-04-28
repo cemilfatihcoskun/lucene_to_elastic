@@ -2,7 +2,7 @@ package lucene_to_elastic;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -54,9 +54,6 @@ public class ElasticsearchDataAccess {
         if (!exists) {
             client.indices().create(c -> c.index(Config.TABLE_INDEX)
                     .mappings(m -> m.properties("dateTime", p -> p.date(d -> d.format("yyyy-MM-dd'T'HH:mm:ss.SSS") // Supports
-                                                                                                                   // full
-                                                                                                                   // ISO-8601
-                                                                                                                   // like
                                                                                                                    // "2000-01-01T12:00:00.000Z"
                     )).properties("title", p -> p.text(t -> t)).properties("content", p -> p.text(t -> t)))
 
@@ -70,7 +67,7 @@ public class ElasticsearchDataAccess {
 
     public void indexDocument(Post post) throws ElasticsearchException, IOException {
         try {
-            IndexResponse res = client.index(i -> i.index(Config.TABLE_INDEX).id(post.getId()).document(post));
+            client.index(i -> i.index(Config.TABLE_INDEX).id(post.getId()).document(post));
             logger.info(String.format("%s is indexed with id %s.", post, post.getId()));
         } catch (ElasticsearchException e) {
             logger.severe(String.format("Failed to index document: ", e.getMessage()));
@@ -85,10 +82,8 @@ public class ElasticsearchDataAccess {
         client.indices().refresh(r -> r.index(Config.TABLE_INDEX));
         
         int total = 0;
-        
         LocalDateTime iter = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
-        System.out.println();
-        while (iter.compareTo(Utils.now().plusDays(1)) <= 0) {
+        while (iter.compareTo(Utils.now()) < 0) {
             final LocalDateTime iter2 = iter;
             
             SearchResponse<Post> res = client.search(s -> s
@@ -106,15 +101,15 @@ public class ElasticsearchDataAccess {
             for (Hit<Post> hit : hits) {
                 Post post = hit.source();
                 System.out.println(post);
-            } 
+            }
+            
+            if (hits.isEmpty()) {
+                System.out.println(String.format("No documents in day %s.", iter.toLocalDate()));
+            }
             
             iter = iter.plusDays(1);
             
             total += hits.size();
-            
-            if (hits.isEmpty()) {
-                System.out.println(String.format("No documents in day %s", iter.toLocalDate()));
-            }
         }
         
         System.out.println(String.format("Total = %d documents.", total));
@@ -157,5 +152,29 @@ public class ElasticsearchDataAccess {
             logger.info(String.format("Day %s documents (%d) are indexed to Elasticsearch.",
                     posts.get(0).getDateTime().toLocalDate(), posts.size()));
         }
+    }
+
+    public ArrayList<Post> getDay(LocalDateTime datetime) throws ElasticsearchException, IOException {
+        client.indices().refresh(r -> r.index(Config.TABLE_INDEX));
+        
+        SearchResponse<Post> res = client.search(s -> s
+                .index(Config.TABLE_INDEX)
+                .size(10000)
+                .query(q -> q.range(r -> r.date(d -> d
+                        .field("dateTime")
+                        .gte(DateTimeConverter.toStringFullISO(datetime))
+                        .lt(DateTimeConverter.toStringFullISO(datetime.plusDays(1)))
+                        )))
+        , Post.class);
+        
+        List<Hit<Post>> hits = res.hits().hits();
+        
+        ArrayList<Post> posts = new ArrayList<Post>();
+        for (Hit<Post> hit : hits) {
+            Post post = hit.source();
+            posts.add(post);
+        } 
+        
+        return posts;
     }
 }

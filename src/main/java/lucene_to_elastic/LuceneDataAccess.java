@@ -75,7 +75,7 @@ public class LuceneDataAccess {
                 int seconds = Utils.randomInteger(0, 59);
                 int milliseconds = Utils.randomInteger(0, 999);
                 
-                LocalDateTime dateTime = LocalDateTime.of(2020, 1, 1, hours, minutes, seconds, 0).plus(milliseconds, ChronoUnit.MILLIS).plusDays(j);
+                LocalDateTime dateTime = LocalDateTime.of(2025, 1, 1, hours, minutes, seconds, 0).plus(milliseconds, ChronoUnit.MILLIS).plusDays(j);
                 
                 Post post = Post.generateWithTime(dateTime);
                 add(writer, post);
@@ -97,7 +97,7 @@ public class LuceneDataAccess {
         doc.add(new Field("content", post.getContent(), Field.Store.YES, Field.Index.ANALYZED));
         doc.add(new Field("datetime", DateTimeConverter.toString(post.getDateTime()), Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
-        logger.info(String.format("%s is indexed", post));
+        logger.info(String.format("%s is indexed.", post));
     }
 
     public void printAll()
@@ -116,7 +116,7 @@ public class LuceneDataAccess {
             }
         }
 
-        System.out.println(String.format("Total: %d", numDocs));
+        System.out.println(String.format("Total: %d.", numDocs));
         
         searcher.getIndexReader().close();
         searcher.close();

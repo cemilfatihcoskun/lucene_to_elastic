@@ -93,13 +93,25 @@ public class Main {
         Logger.getGlobal().addHandler(fh);
     }
     
+    public static void test() throws Exception {
+        Main.clean();
+        Main.initLuceneData(10, 100);
+        Main.transferAndGenerateAfterDoneTransfer();
+    }
+    
+    public static void print() throws Exception {
+        ElasticsearchDataAccess elastic = new ElasticsearchDataAccess();
+        LuceneDataAccess lucene = new LuceneDataAccess();
+        
+        //lucene.printAll();
+        elastic.printAll();
+        
+        elastic.close();
+    }
+    
     public static void main(String[] args) throws Exception {
         Main.handleLogConfig();
-        Main.clean();
         
-        
-        Main.initLuceneData(10, 1000);
-        Main.transferAndGenerateAfterDoneTransfer();
         
     }
 }

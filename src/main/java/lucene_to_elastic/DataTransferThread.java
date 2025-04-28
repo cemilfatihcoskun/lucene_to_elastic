@@ -14,8 +14,13 @@ public class DataTransferThread implements Runnable {
 
             DataTransferManager dataTransferManager = new DataTransferManager();
 
-            LocalDateTime syncDateTime = lucene.findFirstDatasDateTime();
-            syncDateTime = SyncDateTimeManager.loadLastSyncDateTime(syncDateTime);
+            LocalDateTime firstDateTime = lucene.findFirstDatasDateTime();
+            LocalDateTime syncDateTime = SyncDateTimeManager.loadLastSyncDateTime(firstDateTime);
+            
+            // It begins from tomorrow of the last sync date
+            if (!firstDateTime.equals(syncDateTime)) {
+                syncDateTime = syncDateTime.plusDays(1);
+            }
             
             // TODO: Currently only works by date. Also use time
             syncDateTime = syncDateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
@@ -30,7 +35,7 @@ public class DataTransferThread implements Runnable {
             logger.info(String.format("Data up to today (%s) is indexed to elasticsearch.", LocalDate.now()));
             
             dataTransferManager.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
