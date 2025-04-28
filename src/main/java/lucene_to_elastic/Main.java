@@ -14,7 +14,7 @@ public class Main {
     
     // Limitation: 10000 documents in a day
 
-    // http://localhost:9200/posts/_search?q=dateTime:[2000-01-01T00:00:00.000%20TO%202000-01-01T23:59:59.999]
+    // http://localhost:9200/posts/_search?q=dateTime:[2025-04-29T00:00:00.000%20TO%202025-04-29T23:59:59.999]&size=10000&sort=dateTime:asc
     
     public static void clean() throws IOException {
         SyncDateTimeManager.clean();
