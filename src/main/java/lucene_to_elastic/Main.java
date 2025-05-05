@@ -95,7 +95,7 @@ public class Main {
     
     public static void test() throws Exception {
         Main.clean();
-        Main.initLuceneData(10, 100);
+        Main.initLuceneData(10, 20000);
         Main.transferAndGenerateAfterDoneTransfer();
     }
     
@@ -103,14 +103,17 @@ public class Main {
         ElasticsearchDataAccess elastic = new ElasticsearchDataAccess();
         LuceneDataAccess lucene = new LuceneDataAccess();
         
-        //lucene.printAll();
-        elastic.printAll();
+        lucene.printAll();
+        //elastic.printAll();
         
         elastic.close();
     }
     
     public static void main(String[] args) throws Exception {
         Main.handleLogConfig();
+        //Main.print();
+        //Main.clean();
+        //Main.initLuceneData(10, 20000);
         Main.transferAndGenerateAfterDoneTransfer();
     }
 }

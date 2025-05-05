@@ -16,9 +16,10 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
+import co.elastic.clients.elasticsearch._types.FieldValue;
+import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch.core.BulkRequest;
 import co.elastic.clients.elasticsearch.core.BulkResponse;
-import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.bulk.BulkResponseItem;
 import co.elastic.clients.elasticsearch.core.search.Hit;
@@ -131,50 +132,93 @@ public class ElasticsearchDataAccess {
     }
 
     public void bulkIndexDocuments(List<Post> posts) throws ElasticsearchException, IOException {
-        BulkRequest.Builder br = new BulkRequest.Builder();
+        int batchSize = 10000;
+        boolean isError = false;
+        
+        for (int i = 0; i < posts.size(); i += batchSize) {
+            List<Post> batch = posts.subList(i, Math.min(i + batchSize, posts.size()));
+            BulkRequest.Builder br = new BulkRequest.Builder();
 
-        for (Post post : posts) {
-            br.operations(op -> op.index(idx -> idx.index(Config.TABLE_INDEX).id(post.getId()).document(post)));
-        }
+            for (Post post : batch) {
+                br.operations(op -> op.index(idx -> idx.index(Config.TABLE_INDEX).id(post.getId()).document(post)));
+            }
 
-        BulkRequest req = br.build();
-        BulkResponse res = client.bulk(req);
+            BulkRequest req = br.build();
+            BulkResponse res = client.bulk(req);
 
-        if (res.errors()) {
-            logger.severe("Elasticsearch could not bulked documents.");
-
-            for (BulkResponseItem item : res.items()) {
-                if (item.error() != null) {
-                    logger.severe(String.format("Bulk error: %s", item.error().reason()));
+            if (res.errors()) {
+                isError = true;
+                logger.severe("Elasticsearch could not bulk documents.");
+                for (BulkResponseItem item : res.items()) {
+                    if (item.error() != null) {
+                        logger.severe(String.format("Bulk error: %s", item.error().reason()));
+                    }
                 }
             }
-        } else {
+        } 
+        
+        if (!isError) {
             logger.info(String.format("Day %s documents (%d) are indexed to Elasticsearch.",
                     posts.get(0).getDateTime().toLocalDate(), posts.size()));
         }
+
     }
 
     public ArrayList<Post> getDay(LocalDateTime datetime) throws ElasticsearchException, IOException {
         client.indices().refresh(r -> r.index(Config.TABLE_INDEX));
-        
-        SearchResponse<Post> res = client.search(s -> s
-                .index(Config.TABLE_INDEX)
-                .size(10000)
-                .query(q -> q.range(r -> r.date(d -> d
+
+        ArrayList<Post> posts = new ArrayList<>();
+        // Used a smaller batch size for better performance
+        int size = 2000;
+        List<FieldValue> searchAfterValues = null;
+
+        // For safety purposes the number of iterations is limited
+        for (int i = 0; i < 10000; i++) {
+            final List<FieldValue> currentSearchAfterValues = searchAfterValues;
+            
+            SearchResponse<Post> res;
+            if (currentSearchAfterValues == null) {
+                // First request without searchAfter
+                res = client.search(s -> s
+                    .index(Config.TABLE_INDEX)
+                    .size(size)
+                    .query(q -> q.range(r -> r.date(d -> d
                         .field("dateTime")
                         .gte(DateTimeConverter.toStringFullISO(datetime))
                         .lt(DateTimeConverter.toStringFullISO(datetime.plusDays(1)))
-                        )))
-        , Post.class);
-        
-        List<Hit<Post>> hits = res.hits().hits();
-        
-        ArrayList<Post> posts = new ArrayList<Post>();
-        for (Hit<Post> hit : hits) {
-            Post post = hit.source();
-            posts.add(post);
-        } 
-        
+                    )))
+                    .sort(sort -> sort.field(f -> f.field("dateTime").order(SortOrder.Asc)))
+                , Post.class);
+            } else {
+                // Subsequent requests with searchAfter
+                res = client.search(s -> s
+                    .index(Config.TABLE_INDEX)
+                    .size(size)
+                    .query(q -> q.range(r -> r.date(d -> d
+                        .field("dateTime")
+                        .gte(DateTimeConverter.toStringFullISO(datetime))
+                        .lt(DateTimeConverter.toStringFullISO(datetime.plusDays(1)))
+                    )))
+                    .sort(sort -> sort.field(f -> f.field("dateTime").order(SortOrder.Asc)))
+                    .searchAfter(currentSearchAfterValues)
+                , Post.class);
+            }
+
+            List<Hit<Post>> hits = res.hits().hits();
+
+            if (hits.isEmpty()) {
+                break;
+            }
+
+            for (Hit<Post> hit : hits) {
+                Post post = hit.source();
+                posts.add(post);
+            }
+
+            // Get sort values from the last hit for next iteration
+            searchAfterValues = hits.get(hits.size() - 1).sort();
+        }
+
         return posts;
     }
 }

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -39,10 +41,12 @@ public class DataTransferManager {
         TermRangeQuery query = new TermRangeQuery("datetime", startDateTime, endDateTime, true, false);
         TopDocs results = searcher.search(query, Integer.MAX_VALUE);
         
+        /*
         if (results.totalHits > 10000) {
             logger.severe("Unfortunately. Currently the system works with 10000 documents per a day.");
             throw new Exception("Unfortunately. Currently the system works with 10000 documents per a day.");
         }
+        */
         
         List<Post> posts = new ArrayList<>();
         for (int i = 0; i < results.totalHits; i++) {
@@ -70,13 +74,20 @@ public class DataTransferManager {
             throw new Exception(String.format("Day %s there are documents that duplicated.", datetime));
         }
         
+        Comparator<Post> postComparator = Comparator.comparing(post -> {
+            return post.getDateTime() + "_" + post.getId();
+        });
+
+        Collections.sort(posts, postComparator);
+        Collections.sort(posts2, postComparator);
+        
         for (int i = 0; i < posts.size(); i++) {
             long checksumLucene = Utils.calculateCheckSum(posts.get(i).toString());
             long checksumElasticsearch = Utils.calculateCheckSum(posts2.get(i).toString());
             
             if (checksumLucene != checksumElasticsearch) {
-                logger.severe(String.format("Day %s Post %s could not copied well.", datetime.toLocalDate(), posts.get(i).toString()));
-                throw new Exception(String.format("Day %s Post %s could not copied well.", datetime.toLocalDate(), posts.get(i).toString()));
+                logger.severe(String.format("Day %s %s could not copied well.", datetime.toLocalDate(), posts.get(i).toString()));
+                throw new Exception(String.format("Day %s %s could not copied well.", datetime.toLocalDate(), posts.get(i).toString()));
             }
         }
         

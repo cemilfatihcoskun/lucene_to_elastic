@@ -13,5 +13,4 @@ The goal of this program is to copy documents from Lucene to Elasticsearch.
 - Elasticsearch 8.17.4
  
 ## Limitations
-- A maximum of 10,000 documents can be processed per day.
 - It is assumed that yesterday's data can be copied within one day.
