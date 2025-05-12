@@ -38,7 +38,7 @@ public class DataTransferManager {
         String startDateTime = DateTimeConverter.toString(datetime);
         String endDateTime = DateTimeConverter.toString(datetime.plusDays(1));
 
-        TermRangeQuery query = new TermRangeQuery("datetime", startDateTime, endDateTime, true, false);
+        TermRangeQuery query = new TermRangeQuery(Config.TIMESTAMPS_NAME, startDateTime, endDateTime, true, false);
         TopDocs results = searcher.search(query, Integer.MAX_VALUE);
         
         /*

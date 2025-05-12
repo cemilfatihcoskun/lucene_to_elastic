@@ -15,7 +15,7 @@ public class DataTransferThread implements Runnable {
             DataTransferManager dataTransferManager = new DataTransferManager();
 
             LocalDateTime firstDateTime = lucene.findFirstDatasDateTime();
-            LocalDateTime syncDateTime = SyncDateTimeManager.loadLastSyncDateTime(firstDateTime);
+            LocalDateTime syncDateTime = SyncFileManager.loadLastSyncDateTime(firstDateTime);
             
             // It begins from tomorrow of the last sync date
             if (!firstDateTime.equals(syncDateTime)) {
@@ -27,7 +27,7 @@ public class DataTransferThread implements Runnable {
             while (!syncDateTime.toLocalDate().equals(Utils.now().toLocalDate())) {
                 dataTransferManager.transferDataForDate(syncDateTime);
                 
-                SyncDateTimeManager.saveLastSyncDateTime(syncDateTime);
+                SyncFileManager.saveLastSyncDateTime(syncDateTime);
                 syncDateTime = syncDateTime.plusDays(1);
             }
             

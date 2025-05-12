@@ -11,10 +11,16 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.CorruptIndexException;
+import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.index.TermEnum;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
@@ -34,10 +40,10 @@ public class LuceneDataAccess {
         Directory directory = FSDirectory.open(new File(Config.LUCENE_DATABASE_PATH));
         IndexSearcher searcher = new IndexSearcher(directory);
         
-        Sort sort = new Sort(new SortField("datetime", SortField.STRING, false));
+        Sort sort = new Sort(new SortField(Config.TIMESTAMPS_NAME, SortField.STRING, false));
 
         TermRangeQuery query = new TermRangeQuery(
-                "datetime",
+                Config.TIMESTAMPS_NAME,
                 "19700101000000000",
                 "21000101000000000",
                 true,
@@ -48,7 +54,7 @@ public class LuceneDataAccess {
         TopDocs topDocs = searcher.search(query, null, 1, sort);
         if (topDocs.totalHits > 0) {
             Document doc = searcher.doc(topDocs.scoreDocs[0].doc);
-            oldestDate = doc.get("datetime");
+            oldestDate = doc.get(Config.TIMESTAMPS_NAME);
         }
         
         searcher.getIndexReader().close();
@@ -94,8 +100,8 @@ public class LuceneDataAccess {
     public void add(IndexWriter writer, Post post) throws IOException {
         Document doc = new Document();
         doc.add(new Field("id", post.getId(), Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("content", post.getContent(), Field.Store.YES, Field.Index.ANALYZED));
-        doc.add(new Field("datetime", DateTimeConverter.toString(post.getDateTime()), Field.Store.YES, Field.Index.ANALYZED));
+        doc.add(new Field(Config.UNSTORED_FIELD_NAME, post.getContent(), Field.Store.NO, Field.Index.ANALYZED));
+        doc.add(new Field(Config.TIMESTAMPS_NAME, DateTimeConverter.toString(post.getDateTime()), Field.Store.YES, Field.Index.ANALYZED));
         writer.addDocument(doc);
         logger.info(String.format("%s is indexed.", post));
     }
@@ -147,6 +153,73 @@ public class LuceneDataAccess {
         
         writer.close();
         analyzer.close();
+        directory.close();
+    }
+
+    public void f() throws IOException, InterruptedException {
+        //removeAll();
+        //generateAndStoreRandomPosts(3, 100);
+        //add(new Post().setContent("111111").setId("c81f111f-112c-4a0f-8c80-b550ce39a917").setDateTime(Utils.now()));
+        //printAll();
+        
+        SyncFileManager.clean();
+        
+        Directory directory = FSDirectory.open(new File(Config.LUCENE_DATABASE_PATH));
+        IndexReader reader = IndexReader.open(directory);
+        IndexSearcher searcher = new IndexSearcher(reader);
+        
+        TermEnum terms = reader.terms();
+        int count = 0;
+        
+        String lastProcessedTerm = SyncFileManager.loadLastSync();
+        boolean startProcessing = lastProcessedTerm == "";
+        String content = "";
+        
+        int i = 0;
+        while (terms.next()) {
+            Term term = terms.term();
+            if (!term.field().equals(Config.UNSTORED_FIELD_NAME)) {
+                continue;
+            }
+            
+            content = term.text();
+            
+            if (!startProcessing && content.compareTo(lastProcessedTerm) <= 0) {
+                continue;
+            }
+
+            
+            Query query = new TermQuery(new Term(Config.UNSTORED_FIELD_NAME, content));
+            
+            TopDocs topDocs = searcher.search(query, null, Integer.MAX_VALUE);
+            
+            if (topDocs.totalHits > 0) {
+                for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+                    Document document = searcher.doc(scoreDoc.doc);
+                    System.out.println(document.get("id"));
+                    System.out.println(content);
+                    System.out.println(document.get(Config.TIMESTAMPS_NAME));
+                    System.out.println();
+                    
+                    
+                    i++;
+                    if (i % 100 == 0) {
+                        count++;
+                        SyncFileManager.saveLastSync(content + " " + i);
+                    }
+                }
+            }
+            
+            //System.out.println(count);
+            
+        }
+        
+        SyncFileManager.saveLastSync(content);
+        
+        System.out.println(count);
+        
+        searcher.close();
+        reader.close();
         directory.close();
     }
 }

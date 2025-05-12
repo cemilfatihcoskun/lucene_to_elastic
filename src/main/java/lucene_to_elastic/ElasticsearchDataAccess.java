@@ -54,9 +54,9 @@ public class ElasticsearchDataAccess {
         boolean exists = client.indices().exists(e -> e.index(Config.TABLE_INDEX)).value();
         if (!exists) {
             client.indices().create(c -> c.index(Config.TABLE_INDEX)
-                    .mappings(m -> m.properties("dateTime", p -> p.date(d -> d.format("yyyy-MM-dd'T'HH:mm:ss.SSS") // Supports
+                    .mappings(m -> m.properties(Config.TIMESTAMPS_NAME, p -> p.date(d -> d.format("yyyy-MM-dd'T'HH:mm:ss.SSS") // Supports
                                                                                                                    // "2000-01-01T12:00:00.000Z"
-                    )).properties("title", p -> p.text(t -> t)).properties("content", p -> p.text(t -> t)))
+                    )).properties("title", p -> p.text(t -> t)).properties(Config.UNSTORED_FIELD_NAME, p -> p.text(t -> t)))
 
             );
             logger.info(String.format("Index %s did not exist. It created now.", Config.TABLE_INDEX));
@@ -83,34 +83,26 @@ public class ElasticsearchDataAccess {
         client.indices().refresh(r -> r.index(Config.TABLE_INDEX));
         
         int total = 0;
-        LocalDateTime iter = LocalDateTime.of(2000, 1, 1, 0, 0, 0);
+        
+        LuceneDataAccess lucene = new LuceneDataAccess();
+        LocalDateTime iter = lucene.findFirstDatasDateTime();
+        
         while (iter.compareTo(Utils.now()) < 0) {
             final LocalDateTime iter2 = iter;
             
-            SearchResponse<Post> res = client.search(s -> s
-                    .index(Config.TABLE_INDEX)
-                    .size(10000)
-                    .query(q -> q.range(r -> r.date(d -> d
-                            .field("dateTime")
-                            .gte(DateTimeConverter.toStringFullISO(iter2))
-                            .lt(DateTimeConverter.toStringFullISO(iter2.plusDays(1)))
-                            )))
-            , Post.class);
-            
-            List<Hit<Post>> hits = res.hits().hits();
+            ArrayList<Post> posts = getDay(iter2);
     
-            for (Hit<Post> hit : hits) {
-                Post post = hit.source();
+            for (Post post : posts) {
                 System.out.println(post);
             }
             
-            if (hits.isEmpty()) {
+            if (posts.isEmpty()) {
                 System.out.println(String.format("No documents in day %s.", iter.toLocalDate()));
             }
             
             iter = iter.plusDays(1);
             
-            total += hits.size();
+            total += posts.size();
         }
         
         System.out.println(String.format("Total = %d documents.", total));
@@ -161,8 +153,44 @@ public class ElasticsearchDataAccess {
             logger.info(String.format("Day %s documents (%d) are indexed to Elasticsearch.",
                     posts.get(0).getDateTime().toLocalDate(), posts.size()));
         }
+        
+    }
+
+    public void bulkIndexDocuments2(List<Post> posts) throws ElasticsearchException, IOException {
+        int batchSize = 10000;
+        boolean isError = false;
+        
+        for (int i = 0; i < posts.size(); i += batchSize) {
+            List<Post> batch = posts.subList(i, Math.min(i + batchSize, posts.size()));
+            BulkRequest.Builder br = new BulkRequest.Builder();
+
+            for (Post post : batch) {
+                br.operations(op -> op.index(idx -> idx.index(Config.TABLE_INDEX).id(post.getId()).document(post)));
+            }
+
+            BulkRequest req = br.build();
+            BulkResponse res = client.bulk(req);
+
+            if (res.errors()) {
+                isError = true;
+                logger.severe("Elasticsearch could not bulk documents.");
+                for (BulkResponseItem item : res.items()) {
+                    if (item.error() != null) {
+                        logger.severe(String.format("Bulk error: %s", item.error().reason()));
+                    }
+                }
+            }
+        } 
+        
+        // TODO: Disable later
+        if (!isError) {
+            logger.info(String.format("The bulk (%d), the last content (%s) is indexed to Elasticsearch.",
+                    batchSize, posts.get(posts.size() - 1).getContent()));
+        }
 
     }
+    
+    
 
     public ArrayList<Post> getDay(LocalDateTime datetime) throws ElasticsearchException, IOException {
         client.indices().refresh(r -> r.index(Config.TABLE_INDEX));
@@ -183,11 +211,11 @@ public class ElasticsearchDataAccess {
                     .index(Config.TABLE_INDEX)
                     .size(size)
                     .query(q -> q.range(r -> r.date(d -> d
-                        .field("dateTime")
+                        .field(Config.TIMESTAMPS_NAME)
                         .gte(DateTimeConverter.toStringFullISO(datetime))
                         .lt(DateTimeConverter.toStringFullISO(datetime.plusDays(1)))
                     )))
-                    .sort(sort -> sort.field(f -> f.field("dateTime").order(SortOrder.Asc)))
+                    .sort(sort -> sort.field(f -> f.field(Config.TIMESTAMPS_NAME).order(SortOrder.Asc)))
                 , Post.class);
             } else {
                 // Subsequent requests with searchAfter
@@ -195,11 +223,11 @@ public class ElasticsearchDataAccess {
                     .index(Config.TABLE_INDEX)
                     .size(size)
                     .query(q -> q.range(r -> r.date(d -> d
-                        .field("dateTime")
+                        .field(Config.TIMESTAMPS_NAME)
                         .gte(DateTimeConverter.toStringFullISO(datetime))
                         .lt(DateTimeConverter.toStringFullISO(datetime.plusDays(1)))
                     )))
-                    .sort(sort -> sort.field(f -> f.field("dateTime").order(SortOrder.Asc)))
+                    .sort(sort -> sort.field(f -> f.field(Config.TIMESTAMPS_NAME).order(SortOrder.Asc)))
                     .searchAfter(currentSearchAfterValues)
                 , Post.class);
             }

@@ -3,6 +3,7 @@ package lucene_to_elastic;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.Random;
+import java.util.UUID;
 import java.util.zip.CRC32;
 
 public class Utils {
@@ -10,6 +11,10 @@ public class Utils {
         
     static {
         rand = new Random();
+    }
+    
+    public static String uuid() {
+        return UUID.randomUUID().toString();
     }
     
     public static String randomNumber() {

@@ -7,8 +7,9 @@ public class PostAdapterImpl implements PostAdapter {
     public Post luceneToPost(Document doc) {
         Post post = new Post();
         post.setId(doc.get("id"));
-        post.setContent(doc.get("content"));
-        post.setDateTime(DateTimeConverter.toLocalDateTime(doc.get("datetime")));
+        // TODO: Currently useless only returns empty string
+        post.setContent(doc.get(Config.UNSTORED_FIELD_NAME));
+        post.setDateTime(DateTimeConverter.toLocalDateTime(doc.get(Config.TIMESTAMPS_NAME)));
         return post;
     }
 }

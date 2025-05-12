@@ -39,4 +39,4 @@ lucene_database/
 elasticsearch_database/
 .git
 .gitignore
-
+*.lck
