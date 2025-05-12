@@ -40,3 +40,4 @@ elasticsearch_database/
 .git
 .gitignore
 *.lck
+lastSyncContent.txt
