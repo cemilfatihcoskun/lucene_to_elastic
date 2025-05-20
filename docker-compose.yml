@@ -1,0 +1,25 @@
+services:
+  elasticsearch:
+    image: elasticsearch:8.17.4
+    environment:
+      - discovery.type=single-node
+      - ELASTIC_PASSWORD=f
+      - xpack.security.enabled=true
+      - xpack.security.transport.ssl.enabled=false
+      - xpack.security.http.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+    ports:
+      - "9200:9200"
+    networks:
+      - mynetwork
+    volumes:
+      - ./elasticsearch_database:/usr/share/elasticsearch/data
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  elasticsearch_database:
+    driver: local
+  

@@ -1,0 +1,30 @@
+spring:
+        application:
+                name: clitest
+        shell:
+                interactive:
+                        enabled: true
+
+logging:
+        file:
+                path: /
+                name: log.txt
+        level:
+                com:
+                        cfc: debug
+                        
+elasticsearch:
+        uri: http://localhost:9200
+        apiKeyEncoded: YzgyXzdKWUJmMC1yQW9lNko5aW46Uk5nNnZQbkVUZEtsVGk2NnctdGhfQQ==
+        indexName: posts
+        
+lucene:
+        index:
+                path: lucene_index
+
+synchronizationFile: last_sync.txt
+
+
+
+
+                

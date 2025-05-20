@@ -1,0 +1,116 @@
+2025-05-20T17:18:51.691+03:00  INFO 15027 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : Starting ClitestApplication using Java 21.0.7 with PID 15027 (/home/cfc/Masaüstü/Calismalar/clitest/target/classes started by cfc in /home/cfc/Masaüstü/Calismalar/clitest)
+2025-05-20T17:18:51.692+03:00  INFO 15027 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-05-20T17:18:52.862+03:00  INFO 15027 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : Started ClitestApplication in 1.49 seconds (process running for 1.678)
+2025-05-20T17:28:00.394+03:00  INFO 38987 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : Starting ClitestApplication using Java 21.0.7 with PID 38987 (/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes started by cfc in /home/cfc/Masaüstü/Projeler/lucene_to_elastic)
+2025-05-20T17:28:00.396+03:00  INFO 38987 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-05-20T17:28:01.339+03:00  WARN 38987 --- [clitest] [main] s.c.a.AnnotationConfigApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataTransferCommands' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/commands/DataTransferCommands.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'documentTransferService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/DocumentTransferService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'elasticsearchService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/ElasticsearchService.class]: Failed to instantiate [com.lucene_to_elastic.services.ElasticsearchService]: Constructor threw exception
+2025-05-20T17:28:01.346+03:00  INFO 38987 --- [clitest] [main] .s.b.a.l.ConditionEvaluationReportLogger : 
+
+Error starting ApplicationContext. To display the condition evaluation report re-run your application with 'debug' enabled.
+2025-05-20T17:28:01.362+03:00 ERROR 38987 --- [clitest] [main] o.s.boot.SpringApplication               : Application run failed
+
+org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'dataTransferCommands' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/commands/DataTransferCommands.class]: Unsatisfied dependency expressed through constructor parameter 0: Error creating bean with name 'documentTransferService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/DocumentTransferService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'elasticsearchService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/ElasticsearchService.class]: Failed to instantiate [com.lucene_to_elastic.services.ElasticsearchService]: Constructor threw exception
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1387) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1224) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:371) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.instantiateSingleton(DefaultListableBeanFactory.java:1221) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingleton(DefaultListableBeanFactory.java:1187) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:1122) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:987) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:627) ~[spring-context-6.2.6.jar:6.2.6]
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:753) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:439) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:318) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1362) ~[spring-boot-3.4.5.jar:3.4.5]
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1351) ~[spring-boot-3.4.5.jar:3.4.5]
+	at com.lucene_to_elastic.ClitestApplication.main(ClitestApplication.java:12) ~[classes/:na]
+Caused by: org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with name 'documentTransferService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/DocumentTransferService.class]: Unsatisfied dependency expressed through constructor parameter 1: Error creating bean with name 'elasticsearchService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/ElasticsearchService.class]: Failed to instantiate [com.lucene_to_elastic.services.ElasticsearchService]: Constructor threw exception
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:804) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:240) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1387) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1224) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:371) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1681) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1627) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.6.jar:6.2.6]
+	... 20 common frames omitted
+Caused by: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'elasticsearchService' defined in file [/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes/com/lucene_to_elastic/services/ElasticsearchService.class]: Failed to instantiate [com.lucene_to_elastic.services.ElasticsearchService]: Constructor threw exception
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:321) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.autowireConstructor(ConstructorResolver.java:309) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.autowireConstructor(AbstractAutowireCapableBeanFactory.java:1387) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBeanInstance(AbstractAutowireCapableBeanFactory.java:1224) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:569) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:529) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:339) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:371) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:337) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:202) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1681) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1627) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.resolveAutowiredArgument(ConstructorResolver.java:913) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.createArgumentArray(ConstructorResolver.java:791) ~[spring-beans-6.2.6.jar:6.2.6]
+	... 33 common frames omitted
+Caused by: org.springframework.beans.BeanInstantiationException: Failed to instantiate [com.lucene_to_elastic.services.ElasticsearchService]: Constructor threw exception
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:222) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.SimpleInstantiationStrategy.instantiate(SimpleInstantiationStrategy.java:145) ~[spring-beans-6.2.6.jar:6.2.6]
+	at org.springframework.beans.factory.support.ConstructorResolver.instantiate(ConstructorResolver.java:318) ~[spring-beans-6.2.6.jar:6.2.6]
+	... 46 common frames omitted
+Caused by: org.apache.http.ConnectionClosedException: Connection is closed
+	at org.elasticsearch.client.RestClient.extractAndWrapCause(RestClient.java:924) ~[elasticsearch-rest-client-8.15.5.jar:8.15.5]
+	at org.elasticsearch.client.RestClient.performRequest(RestClient.java:304) ~[elasticsearch-rest-client-8.15.5.jar:8.15.5]
+	at org.elasticsearch.client.RestClient.performRequest(RestClient.java:292) ~[elasticsearch-rest-client-8.15.5.jar:8.15.5]
+	at co.elastic.clients.transport.rest_client.RestClientHttpClient.performRequest(RestClientHttpClient.java:92) ~[elasticsearch-java-8.17.4.jar:na]
+	at co.elastic.clients.transport.ElasticsearchTransportBase.performRequest(ElasticsearchTransportBase.java:145) ~[elasticsearch-java-8.17.4.jar:na]
+	at co.elastic.clients.elasticsearch.indices.ElasticsearchIndicesClient.exists(ElasticsearchIndicesClient.java:1017) ~[elasticsearch-java-8.17.4.jar:na]
+	at co.elastic.clients.elasticsearch.indices.ElasticsearchIndicesClient.exists(ElasticsearchIndicesClient.java:1034) ~[elasticsearch-java-8.17.4.jar:na]
+	at com.lucene_to_elastic.services.ElasticsearchService.createTableIndexIfNotExists(ElasticsearchService.java:38) ~[classes/:na]
+	at com.lucene_to_elastic.services.ElasticsearchService.<init>(ElasticsearchService.java:33) ~[classes/:na]
+	at java.base/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502) ~[na:na]
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:486) ~[na:na]
+	at org.springframework.beans.BeanUtils.instantiateClass(BeanUtils.java:209) ~[spring-beans-6.2.6.jar:6.2.6]
+	... 48 common frames omitted
+Caused by: org.apache.http.ConnectionClosedException: Connection is closed
+	at org.apache.http.nio.protocol.HttpAsyncRequestExecutor.endOfInput(HttpAsyncRequestExecutor.java:356) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.DefaultNHttpClientConnection.consumeInput(DefaultNHttpClientConnection.java:261) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.client.InternalIODispatch.onInputReady(InternalIODispatch.java:87) ~[httpasyncclient-4.1.5.jar:4.1.5]
+	at org.apache.http.impl.nio.client.InternalIODispatch.onInputReady(InternalIODispatch.java:40) ~[httpasyncclient-4.1.5.jar:4.1.5]
+	at org.apache.http.impl.nio.reactor.AbstractIODispatch.inputReady(AbstractIODispatch.java:114) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.BaseIOReactor.readable(BaseIOReactor.java:162) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.AbstractIOReactor.processEvent(AbstractIOReactor.java:337) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.AbstractIOReactor.processEvents(AbstractIOReactor.java:315) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.AbstractIOReactor.execute(AbstractIOReactor.java:276) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.BaseIOReactor.execute(BaseIOReactor.java:104) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at org.apache.http.impl.nio.reactor.AbstractMultiworkerIOReactor$Worker.run(AbstractMultiworkerIOReactor.java:591) ~[httpcore-nio-4.4.16.jar:4.4.16]
+	at java.base/java.lang.Thread.run(Thread.java:1583) ~[na:na]
+
+2025-05-20T17:28:12.695+03:00  INFO 39551 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : Starting ClitestApplication using Java 21.0.7 with PID 39551 (/home/cfc/Masaüstü/Projeler/lucene_to_elastic/target/classes started by cfc in /home/cfc/Masaüstü/Projeler/lucene_to_elastic)
+2025-05-20T17:28:12.696+03:00  INFO 39551 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : No active profile set, falling back to 1 default profile: "default"
+2025-05-20T17:28:13.744+03:00  INFO 39551 --- [clitest] [main] c.lucene_to_elastic.ClitestApplication   : Started ClitestApplication in 1.331 seconds (process running for 1.542)
+2025-05-20T17:28:29.454+03:00  INFO 39551 --- [clitest] [main] c.l.services.ElasticsearchService        : All documents are deleted.
+2025-05-20T17:28:34.677+03:00  INFO 39551 --- [clitest] [main] org.jline                                : All documents are removed.
+2025-05-20T17:29:50.010+03:00  INFO 39551 --- [clitest] [main] c.l.services.ElasticsearchService        : Total 10000 documents processed.
+2025-05-20T17:29:50.010+03:00  INFO 39551 --- [clitest] [main] c.l.services.SynchronizationService      : Last processed content has been saved.
+2025-05-20T17:29:50.011+03:00  INFO 39551 --- [clitest] [main] c.l.services.DocumentTransferService     : 10000 entries are transferred.
+2025-05-20T17:30:09.006+03:00  INFO 39551 --- [clitest] [main] c.l.services.ElasticsearchService        : Total 10000 documents processed.
+2025-05-20T17:30:09.007+03:00  INFO 39551 --- [clitest] [main] c.l.services.SynchronizationService      : Last processed content has been saved.
+2025-05-20T17:30:09.007+03:00  INFO 39551 --- [clitest] [main] c.l.services.DocumentTransferService     : 10000 entries are transferred.
+2025-05-20T17:30:27.680+03:00  INFO 39551 --- [clitest] [main] c.l.services.ElasticsearchService        : Total 10000 documents processed.
+2025-05-20T17:30:27.680+03:00  INFO 39551 --- [clitest] [main] c.l.services.SynchronizationService      : Last processed content has been saved.
+2025-05-20T17:30:27.680+03:00  INFO 39551 --- [clitest] [main] c.l.services.DocumentTransferService     : 10000 entries are transferred.
+2025-05-20T17:30:47.411+03:00  INFO 39551 --- [clitest] [main] c.l.services.ElasticsearchService        : Total 10000 documents processed.
+2025-05-20T17:30:47.411+03:00  INFO 39551 --- [clitest] [main] c.l.services.SynchronizationService      : Last processed content has been saved.
+2025-05-20T17:30:47.411+03:00  INFO 39551 --- [clitest] [main] c.l.services.DocumentTransferService     : 10000 entries are transferred.
